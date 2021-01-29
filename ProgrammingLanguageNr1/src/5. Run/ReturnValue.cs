@@ -196,21 +196,7 @@ namespace ProgrammingLanguageNr1
 				return PrettyStringRepresenation(obj);
 			}
 			else if(type == ReturnValueType.NUMBER) {
-				if(obj.GetType() == typeof(float)) {
-					return (float)obj;
-				}
-				if(obj.GetType() == typeof(int)) {
-					// This is a HACK since I couldn't get all obj:s to be floats, some ints were getting trough even though I tried to weed them out :/
-					return (float)(int)obj;
-				}
-				else if(obj.GetType() == typeof(string)) {
-					try {
-						return (float)Convert.ToDouble ((string)obj, CultureInfo.InvariantCulture);
-					}
-					catch(System.FormatException) {
-						throw new Error("Can't convert " + obj.ToString() + " to a number");
-					}
-				}
+				return ConvertToNumber(obj);
 			}
 			else if(type == ReturnValueType.RANGE) {
 				return (Range)obj;
@@ -230,7 +216,7 @@ namespace ProgrammingLanguageNr1
 					var a = new SortedDictionary<KeyWrapper,object>();
 					string s = (string)obj;
 					for(int i = 0; i < s.Length; i++) {
-						a.Add(new KeyWrapper((float)i), s);
+						a.Add(new KeyWrapper((float)i), s.Substring(i, 1));
 					}
 					return a;
 				}
@@ -239,13 +225,47 @@ namespace ProgrammingLanguageNr1
 				}
 			}
 			else if(type == ReturnValueType.BOOL) {
-				return (bool)obj;
+				return ConvertToBool(obj);
 			}
 			else if(type == ReturnValueType.UNKNOWN_TYPE) {
 				return obj;
 			}
 
-			throw new Exception("Can't change type from " + obj.GetType() + " to " + type);
+			throw new Error("Can't change type from " + obj.GetType() + " to " + type);
+		}
+
+		public static float ConvertToNumber(object o)
+		{
+			if(o.GetType() == typeof(float)) {
+				return (float)o;
+			}
+			else if(o.GetType() == typeof(int)) {
+				return (float)(int)o;
+			}
+			else if(o.GetType() == typeof(string)) {
+				try {
+					return (float)Convert.ToDouble ((string)o, CultureInfo.InvariantCulture);
+				}
+				catch(System.FormatException) {
+					throw new Error("Can't convert " + o.ToString() + " to a number");
+				}
+			}
+
+			throw new Error("Can't convert value " + o + " of type " + PrettyObjectType(o.GetType()) + " to number");
+		}
+
+		public static bool ConvertToBool(object o)
+		{
+			if(o.GetType() == typeof(bool)) {
+				return (bool)o;
+			}
+			else if(o.GetType() == typeof(float)) {
+				return ((float)o == 0f ? false : true);
+			}
+			else if(o.GetType() == typeof(int)) {
+				return ((int)o == 0 ? false : true);
+			}
+			throw new Error("Can't convert value " + o + " of type " + PrettyObjectType(o.GetType()) + " to bool");
 		}
 	}
 
@@ -286,8 +306,6 @@ namespace ProgrammingLanguageNr1
 			return diff;
 		}
 	}
-
-
 
 
 //	

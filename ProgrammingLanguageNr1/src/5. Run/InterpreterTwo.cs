@@ -523,37 +523,8 @@ namespace ProgrammingLanguageNr1
 //			}
         }
 
-		private float ConvertToNumber(object o) {
-			if(o.GetType() == typeof(float)) {
-				return (float)o;
-			}
-			else if(o.GetType() == typeof(int)) {
-				return (float)(int)o;
-			}
-			else if(o.GetType() == typeof(string)) {
-				float f = 0f;
-				if(float.TryParse((string)o, out f)) {
-					return f;
-				}
-			}
-
-			throw new Error("Can't convert value " + o + " of type " + ReturnValueConversions.PrettyObjectType(o.GetType()) + " to number");
-		}
-
-		private bool ConvertToBool(object o) {
-			//Console.WriteLine("Converting " + o + " of type " + o.GetType() + " to bool");
-			if(o.GetType() == typeof(bool)) {
-				//Console.WriteLine(o + " is bool: " + (bool)o);
-				return (bool)o;
-			}
-			else if(o.GetType() == typeof(float)) {
-				return ((float)o == 0f ? false : true);
-			}
-			else if(o.GetType() == typeof(int)) {
-				return ((int)o == 0 ? false : true);
-			}
-			throw new Error("Can't convert value " + o + " of type " + ReturnValueConversions.PrettyObjectType(o.GetType()) + " to bool");
-		}
+		private float ConvertToNumber(object o) => ReturnValueConversions.ConvertToNumber(o);
+		private bool ConvertToBool(object o) => ReturnValueConversions.ConvertToBool(o);
 
         private void Operator()
         {

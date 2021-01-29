@@ -117,9 +117,9 @@ namespace ProgrammingLanguageNr1
 		}
 		
 		protected TokenType m_tokenType;
-		string m_tokenString;
-		int m_lineNr = -1;
-		int m_linePosition = -1;
+		protected string m_tokenString;
+		protected int m_lineNr = -1;
+		protected int m_linePosition = -1;
 	}
 	
 	public class TokenWithValue : Token {

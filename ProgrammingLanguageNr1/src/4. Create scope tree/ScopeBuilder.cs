@@ -303,11 +303,7 @@ namespace ProgrammingLanguageNr1
 
             if (function == null)
             {
-                m_errorHandler.errorOccured("Can't find function with name " + functionName, 
-				                            Error.ErrorType.SCOPE,
-				                            tree.getToken().LineNr,
-				                            tree.getToken().LinePosition
-				                            );
+                m_errorHandler.errorOccured("Can't find function with name " + functionName, Error.ErrorType.SCOPE, tree.getToken().LineNr, tree.getToken().LinePosition);
             }
             else
             {
@@ -368,18 +364,16 @@ namespace ProgrammingLanguageNr1
             Symbol symbol = m_currentScope.resolve(tree.getTokenString());
 			
 			if(symbol == null) {
-				m_errorHandler.errorOccured(
-					new  Error("Can't find variable or function '" + tree.getTokenString() + "' (forgot quotes?)", 
-				                                       Error.ErrorType.SYNTAX, 
-				                                       tree.getToken().LineNr, 
-				                                       tree.getToken().LinePosition));
+				m_errorHandler.errorOccured(new  Error("Can't find variable or function '" + tree.getTokenString() + "' (forgot quotes?)", 
+						Error.ErrorType.SYNTAX, 
+						tree.getToken().LineNr, 
+						tree.getToken().LinePosition));
 			}
 			else if (symbol is FunctionSymbol) {
-				m_errorHandler.errorOccured(
-				                            new  Error("'" + tree.getTokenString() + "' is a function and must be called with ()", 
-				                                       Error.ErrorType.SYNTAX, 
-				                                       tree.getToken().LineNr, 
-				                                       tree.getToken().LinePosition));
+				m_errorHandler.errorOccured(new  Error("'" + tree.getTokenString() + "' is a function and must be called with ()", 
+					Error.ErrorType.SYNTAX, 
+					tree.getToken().LineNr, 
+					tree.getToken().LinePosition));
 			}
 
             #if WRITE_DEBUG_INFO

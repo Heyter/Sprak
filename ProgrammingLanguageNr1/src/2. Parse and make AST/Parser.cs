@@ -1145,7 +1145,7 @@ Console.WriteLine("Popping out from ifElse branch");
 							//Console.WriteLine("Success, loop variable is called: " + loopVariableName);
 						}
 					}
-					catch(Error e) {
+					catch {
 						//Console.WriteLine ("Failed to match statement after loop variable, will backtrack and assume this loop does not use a loop variable");
 						backtrackToToken (savePoint);
 					}
