@@ -1105,9 +1105,7 @@ Console.WriteLine("Popping out from ifElse branch");
 				
 				// __index__
 				AST_VariableDeclaration loopIndexDeclaration 
-				= new AST_VariableDeclaration(new Token(Token.TokenType.VAR_DECLARATION, "<VAR_DECL>"),
-			                                            ReturnValueType.NUMBER,
-			                                            "__index__");
+				= new AST_VariableDeclaration(new Token(Token.TokenType.VAR_DECLARATION, "<VAR_DECL>"), ReturnValueType.NUMBER, "__index__");
 				loopBlockStatements.addChild(loopIndexDeclaration);
 				
 				AST_Assignment loopIndexAssignment

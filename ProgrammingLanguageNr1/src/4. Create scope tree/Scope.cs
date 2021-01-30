@@ -58,6 +58,8 @@ namespace ProgrammingLanguageNr1
 				return null;
 			}
 		}
+		
+		public List<string> keys() => new List<string>(m_symbols.Keys);
 
         public Scope resolveToScope(string name)
         {

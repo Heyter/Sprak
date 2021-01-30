@@ -272,6 +272,10 @@ namespace ProgrammingLanguageNr1
 			FunctionDocumentation functionDoc_HasFunction =
 				new FunctionDocumentation("Check if a function exists on the object", new string[] { "The name of the function" });
 			allFunctionDefinitions.Add(new FunctionDefinition("bool", "HasFunction", new string[] { "string" }, new string[] { "functionName" }, new ExternalFunctionCreator.OnFunctionCall(API_hasFunction), functionDoc_HasFunction));
+			
+			FunctionDocumentation functionDoc_ArrayFunctions =
+				new FunctionDocumentation("Creates an array of functions on object", new string[] {});
+			allFunctionDefinitions.Add(new FunctionDefinition("array", "GetFunctions", new string[] {}, new string[] {}, new ExternalFunctionCreator.OnFunctionCall(API_arrayFunctions), functionDoc_ArrayFunctions));
 
 			ExternalFunctionCreator externalFunctionCreator = new ExternalFunctionCreator(allFunctionDefinitions.ToArray());
             AST functionList = ast.getChild(1);
@@ -413,7 +417,7 @@ namespace ProgrammingLanguageNr1
 			}
 			else if(args [0].GetType () == typeof(Range)) {
 				Range r = (Range)args [0];
-				float length = r.end - r.start + 1;
+				float length = (r.end - r.start) + 1;
 				return length;
 			}
 			else if(args [0].GetType () == typeof(string)) {
@@ -474,43 +478,26 @@ namespace ProgrammingLanguageNr1
 			}
 		}
 
-        private static object API_toArray(object[] args)
-        {
-			throw new Error("Conversion not implemented yet.");
-		}
+        //private static object API_toArray(object[] args) => throw new Error("Conversion not implemented yet.");
+        //private static object API_toNumber(object[] args) => throw new Error("Conversion not implemented yet.");
+        //private static object API_toString(object[] args) => throw new Error("Conversion not implemented yet.");
+        //private static object API_toBool(object[] args) => throw new Error("Conversion not implemented yet.");
 
-        private static object API_toNumber(object[] args)
-        {
-			throw new Error("Conversion not implemented yet.");
-		}
-
-        private static object API_toString(object[] args)
-        {
-			throw new Error("Conversion not implemented yet.");
-		}
-
-        private static object API_toBool(object[] args)
-        {
-			throw new Error("Conversion not implemented yet.");
-		}
-
-		private static object API_round(object[] args)
-		{
-			return (float)Math.Round((float)args[0]);
-		}
-
-		private static object API_int(object[] args)
-		{
-			return (float)(int)(float)args[0];
-		}
-
-		private static object API_mod(object[] args)
-		{
-			return (float)(int)(float)args[0] % (int)(float)args[1];
-		}
-
-		private object API_hasFunction(object[] args) {
-			return HasFunction(args[0] as String);
+		private static object API_round(object[] args) => (float)Math.Round((float)args[0]);
+		private static object API_int(object[] args) => (float)(int)(float)args[0];
+		private static object API_mod(object[] args) => (float)(int)(float)args[0] % (int)(float)args[1];
+		private object API_hasFunction(object[] args) => HasFunction(args[0] as String);
+		
+		private object API_arrayFunctions(object[] args) {
+			SortedDictionary<KeyWrapper, object> array = new SortedDictionary<KeyWrapper, object>();
+			if (m_interpreter == null)
+				return array;
+			
+			List<string> names = m_interpreter.ArrayFunctions();
+			for (int i = 0; i < names.Count; i++)
+				array.Add(new KeyWrapper(i), names[i]);
+			
+			return array;
 		}
 		
 		private Scope CreateScopeTree(AST ast)

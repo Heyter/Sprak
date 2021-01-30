@@ -180,6 +180,8 @@ namespace ProgrammingLanguageNr1
 		public bool HasFunction(string functionName) {
 			return m_globalScope.resolve(functionName) != null;
 		}
+		
+		public List<string> ArrayFunctions() => m_globalScope.keys();
 
 		public enum ProgramFunctionCallStatus {
 			NO_FUNCTION,
@@ -710,11 +712,15 @@ namespace ProgrammingLanguageNr1
 						lowerBound = range.end;
 						upperBound = range.start;
 					}
+					
 					if (theNumber < lowerBound) {
-						throw new Error ("Index " + index.ToString () + " is outside the range " + array.ToString ());
+						//throw new Error ("Index lower bound " + index.ToString () + " is outside the range " + array.ToString ());
+						theNumber = lowerBound;
 					} else if (theNumber > upperBound) {
-						throw new Error ("Index " + index.ToString () + " is outside the range " + array.ToString ());
+						//throw new Error ("Index upper bound " + index.ToString () + " is outside the range " + array.ToString ());
+						theNumber = upperBound;
 					}
+					
 					val = (float)theNumber;
 					//Console.WriteLine("The result was " + val);
 				} else {
