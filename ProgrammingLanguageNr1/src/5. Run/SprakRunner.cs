@@ -28,8 +28,8 @@ namespace ProgrammingLanguageNr1
 //            result.Add(new FunctionDefinition("number", "allocate", new string[] { "number" }, new string[] { "X" }, new ExternalFunctionCreator.OnFunctionCall(API_allocate), functionDoc_allocate));
 
             FunctionDocumentation functionDoc_Range =
-				new FunctionDocumentation("Create a range of numbers from 'min' to (and including) 'max'", new string[] { "The start value of the range", "The end value of the range" });
-            result.Add(new FunctionDefinition("number", "Range", new string[] { "number", "number" }, new string[] { "min", "max" }, new ExternalFunctionCreator.OnFunctionCall(API_range), functionDoc_Range));
+				new FunctionDocumentation("Return an array of all counting numbers between the two inputs", new string[] { "The start value of the range", "The end value of the range" });
+            result.Add(new FunctionDefinition("array", "Range", new string[] { "number", "number" }, new string[] { "min", "max" }, new ExternalFunctionCreator.OnFunctionCall(API_range), functionDoc_Range));
 
 //            FunctionDocumentation functionDoc_toArray =
 //                new FunctionDocumentation("Convert something to an array", new string[] { "The value to convert" });
@@ -379,62 +379,56 @@ namespace ProgrammingLanguageNr1
 		private static object API_append(object[] args)
 		{
 			SortedDictionary<KeyWrapper, object> array = args[0] as SortedDictionary<KeyWrapper,object>;
-			object val = args [1];
+			object val = args[1];
 
 			// Slow but correct way of doing it:
 			int maxArrayIndex = -1;
 			foreach (var keyWrapper in array.Keys) {
 				var key = keyWrapper.value;
-				if (key.GetType () == typeof (float) &&
-				    maxArrayIndex < (float)key) {
+				
+				if (key.GetType() == typeof(float) && maxArrayIndex < (float)key)
 					maxArrayIndex = (int)(float)key;
-				}
-				else if (key.GetType () == typeof (int) &&
-					maxArrayIndex < (int)key) {
+				else if (key.GetType() == typeof(int) && maxArrayIndex < (int)key)
 					maxArrayIndex = (int)key;
-				}
 			}
-			//int maxArrayIndex = array.Count; // TODO: this is a bug if the array contains sparse indexes or stuff like that
 
 			KeyWrapper newIndex = new KeyWrapper((float)maxArrayIndex + 1);
 
 			if (array.ContainsKey(newIndex))
-			{
 				throw new Error("Can't append to array");
-			}
-			array.Add (newIndex, val);
+			
+			array.Add(newIndex, val);
 			return VoidType.voidType;
 		}
 
         private static object API_count(object[] args)
         {
-			if (args [0].GetType () == typeof(SortedDictionary<KeyWrapper,object>)) {
-				SortedDictionary<KeyWrapper, object> array = args[0] as SortedDictionary<KeyWrapper,object>;
+			object key = args[0];
+
+			if (key.GetType() == typeof(SortedDictionary<KeyWrapper,object>)) {
+				SortedDictionary<KeyWrapper, object> array = key as SortedDictionary<KeyWrapper,object>;
 				return (float)array.Count;
 			}
-			if (args [0].GetType () == typeof(object[])) {
-				return (float)((object[])args[0]).Length;
-			}
-			else if(args [0].GetType () == typeof(Range)) {
-				Range r = (Range)args [0];
+			
+			if (key.GetType() == typeof(object[]))
+				return (float)((object[])key).Length;
+			else if(key.GetType() == typeof(Range)) {
+				Range r = (Range)key;
 				float length = (r.end - r.start) + 1;
 				return length;
 			}
-			else if(args [0].GetType () == typeof(string)) {
-				return (float)((string)args[0]).Length;
-			}
-			else {
-				throw new Error("Can't convert " + args[0].ToString() + " to an array in Count()");
-			}
+			else if(key.GetType() == typeof(string))
+				return (float)((string)key).Length;
+			else
+				throw new Error("Can't convert " + key.ToString() + " to an array in Count()");
 		}
 
         private static object API_allocate(object[] args)
         {
 			int size = (int)(float)args[0];
 			SortedDictionary<KeyWrapper, object> array = new SortedDictionary<KeyWrapper, object>();
-			for(int i  = 0; i < size; i++) {
+			for(int i  = 0; i < size; i++)
 				array.Add(new KeyWrapper((float)i), VoidType.voidType);
-			}
 			return array;
 		}
 
@@ -447,35 +441,27 @@ namespace ProgrammingLanguageNr1
 
         private static object API_range(object[] args)
         {
-			int start = (int)(float)args[0];
-			int end = (int)(float)args[1];
+			int start = (int)(float)args[0],
+				end = (int)(float)args[1];
 
-			if (Math.Abs (start - end) > 50) {
-				// Create a range
-				int step = start < end ? 1 : -1;
-				var range = new Range (start, end, step);
-				//Console.WriteLine ("Created a range: " + range.ToString ());
-				return range;
+			SortedDictionary<KeyWrapper, object> array = new SortedDictionary<KeyWrapper, object>();
+
+			int step = 0;
+			if (start < end) { 
+				step = 1;
+				end++;
 			} else {
-				// Create a normal array
-				SortedDictionary<KeyWrapper, object> array = new SortedDictionary<KeyWrapper, object> ();
-			
-				int step = 0;
-				if (start < end) { 
-					step = 1;
-					end++;
-				} else {
-					step = -1;
-					end--;
-				}		
-				int index = 0;
-				for (int nr = start; nr != end; nr += step) {
-					//Console.WriteLine("nr: " + nr);
-					array [new KeyWrapper((float)index)] = (float)nr;
-					index++;
-				}
-				return array;
+				step = -1;
+				end--;
 			}
+
+			int index = 0;
+			for (int nr = start; nr != end; nr += step) {
+				array[new KeyWrapper((float)index)] = (float)nr;
+				index++;
+			}
+
+			return array;
 		}
 
         //private static object API_toArray(object[] args) => throw new Error("Conversion not implemented yet.");
@@ -514,7 +500,7 @@ namespace ProgrammingLanguageNr1
             painter.PaintAST(ast);
 		}
 
-		void PrintTokens ()
+		/* void PrintTokens ()
 		{
 			Console.WriteLine ("TOKENS");
 			Console.WriteLine ("======");
@@ -522,7 +508,7 @@ namespace ProgrammingLanguageNr1
 				Console.WriteLine (" " + token.ToString());
 			}
 			Console.WriteLine ("======");
-		}
+		} */
 
         public void run()
         {
