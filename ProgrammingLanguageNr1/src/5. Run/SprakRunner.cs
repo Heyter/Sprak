@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace ProgrammingLanguageNr1
 {
@@ -315,8 +314,10 @@ namespace ProgrammingLanguageNr1
 
         private static object API_createArrayOrRangeOfIndexes(object[] args)
         {
-			if (args [0].GetType () == typeof(SortedDictionary<KeyWrapper,object>)) {
-				var originalArray = args [0] as SortedDictionary<KeyWrapper,object>;
+			object key = args[0];
+			
+			if (key.GetType() == typeof(SortedDictionary<KeyWrapper,object>)) {
+				var originalArray = key as SortedDictionary<KeyWrapper,object>;
 				var newArray = new SortedDictionary<KeyWrapper, object> ();
 				int i = 0;
 				foreach (var index in originalArray.Keys) {
@@ -325,8 +326,8 @@ namespace ProgrammingLanguageNr1
 				}		
 				return newArray;
 			}
-			else if (args [0].GetType () == typeof(object[])) {
-				var original = (object[])args[0];
+			else if (key.GetType() == typeof(object[])) {
+				var original = (object[])key;
 				SortedDictionary<KeyWrapper, object> newArray = new SortedDictionary<KeyWrapper, object> ();
 				for(int i = 0; i < original.Length; i++) {
 					var val = original[i];
@@ -334,20 +335,19 @@ namespace ProgrammingLanguageNr1
 				}
 				return newArray;
 			} 
-			else if (args [0].GetType () == typeof(Range)) {
-				Range r = (Range)args [0];
+			else if (key.GetType() == typeof(Range)) {
+				Range r = (Range)key;
 				Range indexRange = new Range (0, Math.Abs ((int)(r.end - r.start)) + 1, 1);
 				//Console.WriteLine ("GetIndexes created index range: " + indexRange);
 				return indexRange;
 			} 
-			else if (args [0].GetType () == typeof(string)) {
-				string s = (string)args[0];
-				var indexRange = new Range (0, s.Length, 1);
+			else if (key.GetType() == typeof(string)) {
+				string s = (string)key;
+				var indexRange = new Range(0, s.Length, 1);
 				return indexRange;
 			}
-			else {
-				throw new Error("Can't convert " + args[0].ToString() + " to an array in GetIndexes()");
-			}
+			else
+				throw new Error("Can't convert " + key.ToString() + " to an array in GetIndexes()");
 		}
 
 		private static object API_hasKey(object[] args)

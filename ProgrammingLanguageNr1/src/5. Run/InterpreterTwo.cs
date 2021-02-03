@@ -699,12 +699,13 @@ namespace ProgrammingLanguageNr1
 			if (array is Range) {
 				//Console.WriteLine ("LOOKING UP KEY " + index + " IN RANGE " + array.ToString ());
 
-				if (index.GetType () == typeof(float)) {
+				if (index.GetType() == typeof(float)) {
 					Range range = (Range)array;
-					float i = range.step * (int)(float)index;
-					float theNumber = range.start + i;
-					float lowerBound = 0;
-					float upperBound = 0;
+					float i = range.step * (int)(float)index,
+						theNumber = range.start + i,
+						lowerBound = 0,
+						upperBound = 0;
+
 					if (range.step > 0) {
 						lowerBound = range.start;
 						upperBound = range.end;
@@ -712,22 +713,20 @@ namespace ProgrammingLanguageNr1
 						lowerBound = range.end;
 						upperBound = range.start;
 					}
+
+					theNumber = Math.Min(Math.Max(theNumber, lowerBound), upperBound);
 					
-					if (theNumber < lowerBound) {
-						//throw new Error ("Index lower bound " + index.ToString () + " is outside the range " + array.ToString ());
-						theNumber = lowerBound;
-					} else if (theNumber > upperBound) {
-						//throw new Error ("Index upper bound " + index.ToString () + " is outside the range " + array.ToString ());
-						theNumber = upperBound;
-					}
+					// if (theNumber < lowerBound)
+						// throw new Error ("Index lower bound " + index.ToString () + " is outside the range " + array.ToString ());
+					// else if (theNumber > upperBound)
+						// throw new Error ("Index upper bound " + index.ToString () + " is outside the range " + array.ToString ());
 					
 					val = (float)theNumber;
 					//Console.WriteLine("The result was " + val);
-				} else {
+				} else
 					throw new Error ("Can't look up " + index.ToString () + " in the range " + array.ToString ());
-				}
 
-			} else if (array.GetType () == typeof(SortedDictionary<KeyWrapper,object>)) {
+			} else if (array.GetType() == typeof(SortedDictionary<KeyWrapper,object>)) {
 				//Console.WriteLine ("LOOKING UP KEY " + index + " of type " + index.GetType() + " IN ARRAY " + ReturnValueConversions.PrettyStringRepresenation(array));
 
 				var a = array as SortedDictionary<KeyWrapper,object>;
@@ -737,7 +736,7 @@ namespace ProgrammingLanguageNr1
 				} else {
 					throw new Error ("Can't find the index '" + index + "' (" + ReturnValueConversions.PrettyObjectType(index.GetType ()) + ") in the array '" + CurrentNode.getTokenString () + "'", Error.ErrorType.RUNTIME, CurrentNode.getToken ().LineNr, CurrentNode.getToken ().LinePosition);
 				}
-			} else if (array.GetType () == typeof(object[])) {
+			} else if (array.GetType() == typeof(object[])) {
 				throw new Error("Illegal object[] array: " + ReturnValueConversions.PrettyStringRepresenation(array));
 //				var a = (object[])array;
 //				if(index.GetType() != typeof(float)) {
@@ -745,7 +744,7 @@ namespace ProgrammingLanguageNr1
 //				}
 //				int i = (int)(float)index;
 //				val = a[i];
-			} else if (array.GetType () == typeof(string)) {
+			} else if (array.GetType() == typeof(string)) {
 				int i = 0;
 				if(index.GetType() == typeof(float)) {
 					i = (int)(float)index;
@@ -761,9 +760,8 @@ namespace ProgrammingLanguageNr1
 				} else {
 					throw new Error ("The index '" + i + "' (" + index.GetType () + ") is outside the bounds of the string '" + CurrentNode.getTokenString () + "'", Error.ErrorType.RUNTIME, CurrentNode.getToken ().LineNr, CurrentNode.getToken ().LinePosition);
 				}
-			} else {
+			} else
 				throw new Error ("Can't convert " + array.ToString () + " to an array (for lookup)");
-			}
 
 			PushValue (val);
 		}
@@ -777,9 +775,8 @@ namespace ProgrammingLanguageNr1
 			#endif*/
 
 			TokenWithValue t = CurrentNode.getToken() as TokenWithValue;
-			if (t == null) {
+			if (t == null)
 				throw new Exception ("Can't convert current node to TokenWithValue: " + CurrentNode + ", it's of type " + CurrentNode.getTokenType());
-			}
 			PushValue(t.getValue());
 		}
 
@@ -787,36 +784,29 @@ namespace ProgrammingLanguageNr1
         {
             ReturnValueType type = (CurrentNode as AST_VariableDeclaration).Type;
             string variableName = (CurrentNode as AST_VariableDeclaration).Name;
-            object initValue = DefaultValue(type);
-            m_currentScope.setValue(variableName, initValue);
+            m_currentScope.setValue(variableName, DefaultValue(type));
         }
 
-		object DefaultValue (ReturnValueType type)
+		object DefaultValue(ReturnValueType type)
 		{
-			if(type == ReturnValueType.STRING) {
-				return "";
+			switch(type) {
+				case ReturnValueType.STRING:
+					return "";
+				case ReturnValueType.BOOL:
+					return false;
+				case ReturnValueType.NUMBER:
+					return 0.0f;
+				case ReturnValueType.RANGE:
+					return new Range(0, 0, 0);
+				case ReturnValueType.ARRAY:
+					return new SortedDictionary<KeyWrapper, object>();
+				case ReturnValueType.VOID:
+					return VoidType.voidType;
+				case ReturnValueType.UNKNOWN_TYPE:
+					return UnknownType.unknownType;
 			}
-			else if(type == ReturnValueType.BOOL) {
-				return false;
-			}
-			else if(type == ReturnValueType.NUMBER) {
-				return 0.0f;
-			}
-			else if(type == ReturnValueType.RANGE) {
-				return new Range(0, 0, 0);
-			}
-			else if(type == ReturnValueType.ARRAY) {
-				return new SortedDictionary<KeyWrapper, object>();
-			}
-			else if(type == ReturnValueType.VOID) {
-				return VoidType.voidType;
-			}
-			else if(type == ReturnValueType.UNKNOWN_TYPE) {
-				return UnknownType.unknownType;
-			}
-			else {
-				throw new Error("No default value for " + type);
-			}
+
+			throw new Error("No default value for " + type);
 		}
 		
 		private object ConvertToType(object valueToConvert, Type type) {
